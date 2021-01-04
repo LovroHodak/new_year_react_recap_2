@@ -1,23 +1,39 @@
-import logo from './logo.svg';
-import './App.css';
+import axios from "axios";
+import React, { useState, useEffect } from "react";
+import "./App.css";
+import Navigator from './components/Navigator'
+import {Route, Link, Switch} from 'react-router-dom'
+import PokemonDetail from './components/PokemonDetail'
+import About from './components/About'
 
 function App() {
+  const [pokemons, setPokemons] = useState([]);
+
+  useEffect(() => {
+    axios.get("https://pokeapi.co/api/v2/pokemon").then((response) => {
+      //console.log(response.data.results)
+      setPokemons(response.data.results);
+    });
+  }, []);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <Navigator />
+      <div className="App">
+        {pokemons.map((pokemon, i) => {
+          return (
+            <Link to={`/pokemon/${i+1}`}>
+              <p key={i}> {pokemon.name} </p>
+            </Link>
+          );
+        })}
+      </div>
+      <div>
+      <Switch>
+        <Route path='/pokemon/:pokemonId' component={PokemonDetail} />
+        <Route path='/about' component={About} />
+      </Switch>
+      </div>
     </div>
   );
 }
